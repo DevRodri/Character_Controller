@@ -10,6 +10,7 @@ public class PlayerMovement : MonoBehaviour {
     public float gravity;
 
     private bool isGrounded = false;
+    private Vector3 moveDirection; //dirección del movimiento
 
 	// Use this for initialization
 	void Start () {
@@ -21,11 +22,24 @@ public class PlayerMovement : MonoBehaviour {
 
         if (isGrounded)
         {
-            /*REHACER EL MOVIMIENTO CON FUERZAS */
-            //Player Movement
-            this.transform.Translate(0, 0, Input.GetAxis("Vertical") * speed * Time.fixedDeltaTime);
-            this.transform.Rotate(0, Input.GetAxis("Horizontal") * turnSpeed * Time.fixedDeltaTime, 0);
+            moveDirection = new Vector3(0, 0, Input.GetAxis("Vertical"));
 
+            if (moveDirection != Vector3.zero)
+            {
+                //PLAYER ROTATION
+                Quaternion playerRotation = Quaternion.LookRotation(moveDirection);
+                this.transform.rotation = Quaternion.Slerp(this.transform.rotation, playerRotation, turnSpeed * Time.fixedDeltaTime);
+
+                //Player Movement //ARREGLAR
+                //this.transform.Translate(moveDirection * speed * Time.fixedDeltaTime);
+
+                this.transform.Translate(moveDirection * speed * Time.fixedDeltaTime, Space.World);
+                this.transform.Rotate(0, Input.GetAxis("Horizontal") * turnSpeed * Time.deltaTime, 0);
+            }
+
+
+
+            /*
             if (Input.GetKeyUp(KeyCode.Space))
             {
                 //calcular la dirección de salto
@@ -34,7 +48,7 @@ public class PlayerMovement : MonoBehaviour {
 
                 this.rigidbody.AddForce(jumpDir * jumpForce, ForceMode.Impulse);
                 isGrounded = false;
-            }
+            }*/
         }
 
         //apply gravity
