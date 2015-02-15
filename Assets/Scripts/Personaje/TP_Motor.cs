@@ -17,14 +17,17 @@ public class TP_Motor : MonoBehaviour {
 
 
     //PRIVATE
-    private bool isGrounded = false;
-    private bool isJumping = false;
-    private bool isReJumping = false;
+    private bool isGrounded;
+    private bool isJumping;
+    private bool isReJumping;
+    private float floorPos;
 
     void Awake()
     {
         Instance = this;
         moveVector = Vector3.zero;
+        isGrounded = isJumping = isReJumping = false;
+        floorPos = 0f;
     }
 
 	// Use this for initialization
@@ -79,27 +82,41 @@ public class TP_Motor : MonoBehaviour {
 
     public void Jump()
     {
-        Debug.Log("Button 0 pressed!!");
-        if (!isJumping)
+        Debug.Log("Entro");
+        Debug.Log("My Pos: " + this.transform.position.y);
+        Debug.Log("Jumping: " + isJumping);
+        Debug.Log("Rejumping" + isReJumping);
+        if (!isJumping && isGrounded)
         {
+            Debug.Log("I'm Jumping !!!)");
             this.rigidbody.AddForce(new Vector3(0f, 1f * jumpSpeed, 0f), ForceMode.Impulse);
             isJumping = true;
+        }
+        else if (!isReJumping && this.transform.position.y > floorPos)
+        {
+            Debug.Log("I'm Rejumping !!!");
+            this.rigidbody.AddForce(new Vector3(0f, 0.75f * jumpSpeed, 0f), ForceMode.Impulse);
+            isReJumping = true;
         }
     }
 
     void ApplyGravity()
     {
-        if (!isGrounded)
-        {
+        //if (!isGrounded)
+        //{
             this.rigidbody.AddForce(new Vector3(0f, -1f * gravity, 0f), ForceMode.Acceleration);
-        }
+        //}
     }
 
     public void OnCollisionStay(Collision col)
     {
+        //Debug.Log("I'm Grounded !!!");
+        //Debug.Log("Floor Pos: " + floorPos);
+        //Debug.Log("My Pos: " + this.transform.position.y);
         isGrounded = true;
         isJumping = false;
         isReJumping = false;
+        floorPos = this.transform.position.y;
     }
 
     public void OnCollisionExit(Collision col)

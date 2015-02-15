@@ -26,8 +26,8 @@ public class CameraFollow : MonoBehaviour {
         Quaternion destRotation = Quaternion.identity;
         destRotation.eulerAngles = target.transform.rotation.eulerAngles;
 
-        offset.y = height;
-        offset.z = -distance;
+        offset.y = Mathf.Lerp(offset.y, height, smoothMove * Time.deltaTime);
+        offset.z = Mathf.Lerp(offset.z, -distance, smoothMove * Time.deltaTime);
 
         Vector3 destPos = target.transform.position + (destRotation * offset);
         //Vector3 destPos = target.transform.position + offset;
