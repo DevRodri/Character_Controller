@@ -29,14 +29,14 @@ public class CameraFollow : MonoBehaviour {
         offset.y = height;
         offset.z = -distance;
 
-        //Vector3 destPos = target.transform.position + (destRotation * offset);
-        Vector3 destPos = target.transform.position + offset;
-        Debug.Log("destPos: " + (target.transform.position - this.transform.position).magnitude);
+        Vector3 destPos = target.transform.position + (destRotation * offset);
+        //Vector3 destPos = target.transform.position + offset;
+        //Debug.Log("destPos: " + (target.transform.position - this.transform.position).magnitude);
 
-        if ((target.transform.position - this.transform.position).magnitude > distance)
-        {
+        //if ((target.transform.position - this.transform.position).magnitude > distance)
+        //{
             this.transform.position = Vector3.Slerp(this.transform.position, destPos, smoothMove * Time.deltaTime);
-        }
+        //}
 
         this.transform.LookAt(target.transform.position);
         
