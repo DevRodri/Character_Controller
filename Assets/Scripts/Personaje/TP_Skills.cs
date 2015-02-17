@@ -7,7 +7,7 @@ public class TP_Skills : MonoBehaviour {
 
     //PUBLIC
     public static TP_Skills Instance;
-
+    public bool isTargetting;
 
     //PRIVATE
 
@@ -19,7 +19,7 @@ public class TP_Skills : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-	
+        isTargetting = false;
 	}
 	
 	// Update is called once per frame

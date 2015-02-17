@@ -60,6 +60,12 @@ public class TP_Controller : MonoBehaviour {
         {
             Jump();
         }
+
+        //Apuntar
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            TP_Skills.Instance.isTargetting = !TP_Skills.Instance.isTargetting;
+        }
     }
 
     void Jump()
