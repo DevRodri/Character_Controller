@@ -38,36 +38,27 @@ public class TP_Motor : MonoBehaviour {
 	void Update () 
     {
         UpdateMovement();
+        ApplyGravity();
 	}
 
-    void UpdateMovement()
+    public void UpdateMovement() //REVISAR
     {
-
-        //this.transform.Rotate(0f, moveVector.x * rotSpeed * Time.deltaTime, 0f);
-
-        //transform to world space
-        moveVector = transform.TransformDirection(moveVector);
-
-        FacePlayerToMovementDir();
-        
-        //normalize the movement vector
         if (moveVector.magnitude > 1) moveVector = Vector3.Normalize(moveVector);
-        //Debug.DrawRay(transform.position, moveVector * 5f);
 
-        //add speed
-        moveVector *= moveSpeed;
+        Vector3 newDirection = Quaternion.LookRotation(transform.position - Camera.main.transform.position).eulerAngles;
+        newDirection.x = 0;
+        newDirection.z = 0;
+        Quaternion rot = Camera.main.transform.rotation;
+        Camera.main.transform.rotation = Quaternion.Euler(newDirection);
+        transform.Translate(moveVector * moveSpeed * Time.deltaTime, Camera.main.transform);
+        Camera.main.transform.rotation = rot;
 
-        //add vertical movement
-        //moveVector = new Vector3(moveVector.x, yVelocity, moveVector.z);
-
-        //apply gravity
-        ApplyGravity();
-
-        Debug.DrawRay(this.transform.position, moveVector, Color.red);
-
-        //update the movement
-        this.transform.Translate(moveVector * Time.deltaTime, Space.World);
-        
+        //Encarar al jugador hacia donde se mueve
+        if (moveVector != Vector3.zero)
+        {
+            Quaternion newRotation = Quaternion.LookRotation(moveVector);
+            transform.rotation = Quaternion.Slerp(transform.rotation, newRotation * Quaternion.Euler(newDirection)/*Camera.main.transform.rotation*/, Time.deltaTime * 5f);
+        }
     }
 
     void FacePlayerToMovementDir()
@@ -102,10 +93,7 @@ public class TP_Motor : MonoBehaviour {
 
     void ApplyGravity()
     {
-        //if (!isGrounded)
-        //{
-            this.rigidbody.AddForce(new Vector3(0f, -1f * gravity, 0f), ForceMode.Acceleration);
-        //}
+        this.rigidbody.AddForce(new Vector3(0f, -1f * gravity, 0f), ForceMode.Acceleration);
     }
 
     public void OnCollisionStay(Collision col)

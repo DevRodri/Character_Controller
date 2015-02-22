@@ -32,21 +32,18 @@ public class CameraFollow : MonoBehaviour {
         else
         {
 
-            Quaternion destRotation = Quaternion.identity;
-            destRotation.eulerAngles = target.transform.rotation.eulerAngles;
-
             offset.y = Mathf.Lerp(offset.y, height, smoothMove * Time.deltaTime);
             offset.z = Mathf.Lerp(offset.z, -distance, smoothMove * Time.deltaTime);
 
-            Vector3 destPos = target.transform.position + (destRotation * offset);
-            //Vector3 destPos = target.transform.position + offset;
+            //Vector3 destPos = target.transform.position + (destRotation * offset);
+            Vector3 destPos = target.transform.position + offset;
             //Debug.Log("destPos: " + (target.transform.position - this.transform.position).magnitude);
 
             //if ((target.transform.position - this.transform.position).magnitude > distance)
             //{
             this.transform.position = Vector3.Slerp(this.transform.position, destPos, smoothMove * Time.deltaTime);
+            //this.transform.rotation = Quaternion.Slerp(targettingPoint.rotation, target.transform.rotation, smoothMove * Time.deltaTime);
             //}
-
             this.transform.LookAt(target.transform.position);
         }
         
@@ -55,7 +52,7 @@ public class CameraFollow : MonoBehaviour {
     void EnableTargetting()
     {
         this.transform.position = Vector3.Slerp(this.transform.position, targettingPoint.position, smoothMove * Time.deltaTime);
-        this.transform.rotation = Quaternion.Slerp(this.transform.rotation, target.transform.rotation, smoothMove * 2f * Time.deltaTime);
+        this.transform.rotation = Quaternion.Slerp(this.transform.rotation, targettingPoint.transform.rotation, smoothMove * 2f * Time.deltaTime);
         this.camera.fieldOfView = Mathf.Lerp(this.camera.fieldOfView, 45f, smoothMove * Time.deltaTime);
     }
 }

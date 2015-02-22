@@ -30,17 +30,19 @@ public class TP_Controller : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-        DetectInput();
-	
+        if (!TP_Camera.Instance.godMode)
+        {
+            InputMovimiento();
+            InputHabilidades();
+        }
+        InputCamara();
 	}
 
     //Get input from controller
-    void DetectInput()
+    void InputMovimiento()
     {
         //Joysticks Input
         Debug.DrawRay(transform.position, lAnalogDirection * 10f, Color.green);
-        rAnalogDirection = new Vector3(Input.GetAxisRaw("Mouse X"), 0f, Input.GetAxisRaw("Mouse Y"));
-        Debug.DrawRay(transform.position, rAnalogDirection * 10f, Color.blue);
 
         if (Input.GetAxisRaw("Horizontal") > deadZone || Input.GetAxisRaw("Horizontal") < -deadZone)
             lAnalogDirection.x = Input.GetAxisRaw("Horizontal");
@@ -54,7 +56,10 @@ public class TP_Controller : MonoBehaviour {
 
         TP_Motor.Instance.moveVector = lAnalogDirection;
 
+    }
 
+    void InputHabilidades()
+    {
         //Jumping Input
         if (Input.GetButtonDown("X360 A Button"))
         {
@@ -66,6 +71,24 @@ public class TP_Controller : MonoBehaviour {
         {
             TP_Skills.Instance.isTargetting = !TP_Skills.Instance.isTargetting;
         }
+    }
+
+    void InputCamara()
+    {
+        //Designar boton para alternar entre modos de cámara { LIBRE, SEGUIMIENTO, DIOS, PUNTOS POR PANTALLA}
+        rAnalogDirection = new Vector3(Input.GetAxisRaw("Mouse X"), 0f, Input.GetAxisRaw("Mouse Y"));
+        Debug.DrawRay(transform.position, rAnalogDirection * 10f, Color.blue);
+
+        if (Input.GetButtonUp("Jump"))
+        {
+            if (TP_Camera.Instance.modoCamara == Modos.Cinema)
+                TP_Camera.Instance.modoCamara = Modos.Follow;
+            else
+                TP_Camera.Instance.modoCamara += 1;
+
+            Debug.Log("El modo de Camara es: " + TP_Camera.Instance.modoCamara);
+        }
+        
     }
 
     void Jump()
