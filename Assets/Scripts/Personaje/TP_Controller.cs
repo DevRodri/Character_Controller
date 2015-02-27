@@ -13,29 +13,30 @@ public class TP_Controller : MonoBehaviour {
     public Vector3 rAnalogDirection;
     public float deadZone;
 
-    //PRIVATE
-
+    public CharacterController controlador;
 
     void Awake()
     {
         Instance = this;
         lAnalogDirection.y = rAnalogDirection.y = 0f;
+        controlador = GetComponent<CharacterController>();
     }
 
 	// Use this for initialization
-	void Start () {
+	void Start()
+    {
 	
 	}
 	
 	// Update is called once per frame
-	void Update () {
-
-        if (!TP_Camera.Instance.godMode)
-        {
-            InputMovimiento();
-            InputHabilidades();
-        }
+	void Update()
+    {
+        InputMovimiento(); //input y actualización del movimiento
+        InputHabilidades();
         InputCamara();
+
+        //actualizamos el movimiento del player
+        TP_Motor.Instance.UpdateMovement();
 	}
 
     //Get input from controller
@@ -61,7 +62,7 @@ public class TP_Controller : MonoBehaviour {
     void InputHabilidades()
     {
         //Jumping Input
-        if (Input.GetButtonDown("X360 A Button"))
+        if (Input.GetKeyDown(KeyCode.Space))
         {
             Jump();
         }
@@ -79,7 +80,7 @@ public class TP_Controller : MonoBehaviour {
         rAnalogDirection = new Vector3(Input.GetAxisRaw("Mouse X"), 0f, Input.GetAxisRaw("Mouse Y"));
         Debug.DrawRay(transform.position, rAnalogDirection * 10f, Color.blue);
 
-        if (Input.GetButtonUp("Jump"))
+        if (Input.GetKeyUp(KeyCode.C))
         {
             if (TP_Camera.Instance.modoCamara == Modos.Cinema)
                 TP_Camera.Instance.modoCamara = Modos.Follow;

@@ -1,0 +1,115 @@
+fileFormatVersion: 2
+guid: beb293be9c38b6c47836dec3c9825c1c
+ModelImporter:
+  serializedVersion: 16
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: Flor_Cuerpo
+    100004: Flor_Cuerpo1
+    100006: Flor_petalo
+    100008: Flor_petalo_1
+    100010: Flor_petalo_2
+    100012: Flor_petalo_3
+    100014: Flor_petalo_4
+    100016: Flor_petalos
+    100018: pasted__group6
+    100020: pasted__group7
+    100022: pasted__group8
+    100024: pasted__pasted__group6
+    100026: pasted__pasted__group7
+    100028: pasted__pasted__pasted__group6
+    100030: pasted__pasted__pasted__pasted__pCube1
+    100032: pasted__pasted__pasted__pCube1
+    100034: pasted__pasted__pCube1
+    100036: pasted__pCube1
+    100038: transform1
+    100040: transform2
+    100042: transform3
+    100044: transform4
+    100046: transform5
+    100048: transform6
+    100050: transform7
+    400000: //RootNode
+    400002: Flor_Cuerpo
+    400004: Flor_Cuerpo1
+    400006: Flor_petalo
+    400008: Flor_petalo_1
+    400010: Flor_petalo_2
+    400012: Flor_petalo_3
+    400014: Flor_petalo_4
+    400016: Flor_petalos
+    400018: pasted__group6
+    400020: pasted__group7
+    400022: pasted__group8
+    400024: pasted__pasted__group6
+    400026: pasted__pasted__group7
+    400028: pasted__pasted__pasted__group6
+    400030: pasted__pasted__pasted__pasted__pCube1
+    400032: pasted__pasted__pasted__pCube1
+    400034: pasted__pasted__pCube1
+    400036: pasted__pCube1
+    400038: transform1
+    400040: transform2
+    400042: transform3
+    400044: transform4
+    400046: transform5
+    400048: transform6
+    400050: transform7
+    2300000: Flor_Cuerpo1
+    3300000: Flor_Cuerpo1
+    4300000: Flor_Cuerpo1
+    9500000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationCompression: 1
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: .00999999978
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+  tangentSpace:
+    normalSmoothAngle: 60
+    splitTangentsAcrossUV: 1
+    normalImportMode: 0
+    tangentImportMode: 1
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .0500000007
+    legStretch: .0500000007
+    feetSpacing: 0
+    rootMotionBoneName: 
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  additionalBone: 0
+  userData: 

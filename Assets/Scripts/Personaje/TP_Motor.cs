@@ -8,6 +8,7 @@ public class TP_Motor : MonoBehaviour {
     //PUBLIC
     public static TP_Motor Instance;
     public Vector3 moveVector;
+    Vector3 targetDir;
     public float moveSpeed;
     public float jumpSpeed;
     public float dampSpeed;
@@ -17,6 +18,7 @@ public class TP_Motor : MonoBehaviour {
 
 
     //PRIVATE
+    private float verticalMovement;
     private bool isGrounded;
     private bool isJumping;
     private bool isReJumping;
@@ -25,23 +27,49 @@ public class TP_Motor : MonoBehaviour {
     void Awake()
     {
         Instance = this;
-        moveVector = Vector3.zero;
+        moveVector = targetDir = Vector3.zero;
         isGrounded = isJumping = isReJumping = false;
         floorPos = 0f;
     }
 
 	// Use this for initialization
 	void Start () {
-	}
-	
-	// Update is called once per frame
-	void Update () 
-    {
-        UpdateMovement();
-        ApplyGravity();
+        verticalMovement = 0f;
 	}
 
     public void UpdateMovement() //REVISAR
+    {
+        Transform camara = TP_Camera.Instance.transform;
+
+        //coordenadas de cámara a wolrd space
+        Vector3 forward = camara.TransformDirection(Vector3.forward);
+        forward.y = 0f;
+        forward = forward.normalized;
+
+        //calcular forward y right en funcion de coordenadas de camara
+        Vector3 right = Vector3.zero;
+        right.x = forward.z;
+        right.z = -forward.x;
+
+        //obtener movimiento del joystick y calcular dirección de movimiento
+        targetDir = moveVector.x * right + moveVector.z * forward;
+        //targetDir = targetDir.normalized;
+
+        //aplicar velocidad
+        targetDir *= moveSpeed;
+
+        //aplicar salto y/o gravedad
+        if (Input.GetKeyUp(KeyCode.Space)) targetDir.y = jumpSpeed;
+
+        targetDir.y -= gravity * Time.deltaTime;
+
+        //actualizar movimiento del controlador
+        TP_Controller.Instance.controlador.Move(targetDir * Time.deltaTime);
+
+        FacePlayerToMovementDir();
+    }
+
+    private void UpdateMovement_old()
     {
         if (moveVector.magnitude > 1) moveVector = Vector3.Normalize(moveVector);
 
@@ -63,9 +91,10 @@ public class TP_Motor : MonoBehaviour {
 
     void FacePlayerToMovementDir()
     {
-        if (moveVector != Vector3.zero)
+        if (targetDir != Vector3.zero)
         {
-            Quaternion faceDir = Quaternion.LookRotation(moveVector);
+            Quaternion faceDir = Quaternion.LookRotation(targetDir);
+            faceDir.x = 0f;
             this.transform.rotation = Quaternion.Slerp(this.transform.rotation, faceDir, dampSpeed * Time.deltaTime);
         }
     }
@@ -73,27 +102,16 @@ public class TP_Motor : MonoBehaviour {
 
     public void Jump()
     {
-        Debug.Log("Entro");
-        Debug.Log("My Pos: " + this.transform.position.y);
-        Debug.Log("Jumping: " + isJumping);
-        Debug.Log("Rejumping" + isReJumping);
-        if (!isJumping && isGrounded)
+        if (TP_Controller.Instance.controlador.isGrounded)
         {
-            Debug.Log("I'm Jumping !!!)");
-            this.rigidbody.AddForce(new Vector3(0f, 1f * jumpSpeed, 0f), ForceMode.Impulse);
-            isJumping = true;
-        }
-        else if (!isReJumping && this.transform.position.y > floorPos)
-        {
-            Debug.Log("I'm Rejumping !!!");
-            this.rigidbody.AddForce(new Vector3(0f, 0.75f * jumpSpeed, 0f), ForceMode.Impulse);
-            isReJumping = true;
+            Debug.Log("I'm grounded, so lets jump!!");
+            verticalMovement = jumpSpeed;
         }
     }
 
     void ApplyGravity()
     {
-        this.rigidbody.AddForce(new Vector3(0f, -1f * gravity, 0f), ForceMode.Acceleration);
+        targetDir.y -= gravity;
     }
 
     public void OnCollisionStay(Collision col)

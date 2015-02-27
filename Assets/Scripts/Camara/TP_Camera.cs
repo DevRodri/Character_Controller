@@ -6,6 +6,10 @@ public enum Modos { Follow = 1, Libre, Orbit, Dios, Puntos, Cinema }
 public class TP_Camera : MonoBehaviour {
 
     public static TP_Camera Instance;
+    public Transform[] points = new Transform[5];
+    private int currentPointIndex;
+    private Transform currentPoint;
+    private bool cameraPosChanged;
     public GameObject objetivo;
     public float velX,velY;
     public float velOrbitX;
@@ -32,7 +36,7 @@ public class TP_Camera : MonoBehaviour {
 	void Start () {
         x = transform.eulerAngles.x;
         godMode = false;
-	
+        cameraPosChanged = false;
 	}
 
     void Update()
@@ -70,8 +74,8 @@ public class TP_Camera : MonoBehaviour {
                 //codigo de movimiento de cámara aqui
                 offset.z = -20f;
                 transform.position = Vector3.Slerp(transform.position, objetivo.transform.position + offset, smoothX * Time.deltaTime);
-
                 break;
+
             case Modos.Orbit:
 
                 x += Input.GetAxis("Mouse X") * velOrbitX * distancia * Time.deltaTime;
@@ -88,15 +92,43 @@ public class TP_Camera : MonoBehaviour {
                 transform.rotation = Quaternion.Slerp(transform.rotation, rotation, smoothX * Time.deltaTime);
                 transform.position = Vector3.Slerp(transform.position, position, 5 * Time.deltaTime);
                 break;
+
             case Modos.Dios: //RETOCAR CON CONTROLES DE SEGUNDO JOYSTICK
-                if (!godMode) godMode = true;;
+
+                if (!godMode) godMode = true;
                 transform.Translate(Input.GetAxisRaw("Horizontal") * 10f * Time.deltaTime, 0f, Input.GetAxisRaw("Vertical") * 10f * Time.deltaTime, Space.World);
                 //transform.Rotate(0f, Input.GetAxisRaw("Horizontal") * 90f * Time.deltaTime, 0f, Space.World);
                 break;
+
             case Modos.Puntos:
-                //codigo de movimiento de cámara aqui
+                //Punto de visualización en el mapa
+                if (Input.GetKeyUp(KeyCode.KeypadPlus))
+                {
+                    cameraPosChanged = true;
+                    if (currentPointIndex == 4) currentPointIndex = 0;
+                    else ++currentPointIndex;
+                }
+                else if (Input.GetKeyUp(KeyCode.KeypadMinus))
+                {
+                    cameraPosChanged = true;
+                    if (currentPointIndex == 0) currentPointIndex = 4;
+                    else --currentPointIndex;
+                }
+
+                //actualizo posición de cámara
+                switch (cameraPosChanged)
+                {
+                    case true:
+                        cameraPosChanged = false;
+                        this.transform.position = points[currentPointIndex].position;
+                        this.transform.rotation = points[currentPointIndex].rotation;
+                        break;
+                    case false: break;
+                }
                 break;
+
             case Modos.Cinema:
+
                 //codigo de movimiento de cámara aqui
                 break;
 
