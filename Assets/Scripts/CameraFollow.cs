@@ -24,7 +24,7 @@ public class CameraFollow : MonoBehaviour {
 	// Update is called once per frame
 	void LateUpdate () {
 
-        if (TP_Skills.Instance.isTargetting)
+        if (TP_Status.Instance.IsTargetting())
         {
             EnableTargetting();
             //transform.LookAt(target.transform.forward);

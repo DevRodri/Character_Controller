@@ -1,30 +1,35 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public enum Modos { Follow = 1, Libre, Orbit, Dios, Puntos, Cinema }
+public enum Skills { Follow = 1, Libre, Orbit, Dios, Puntos, Cinema, Targetting }
 
-public class TP_Camera : MonoBehaviour {
+public class TP_Camera : MonoBehaviour
+{
 
     public static TP_Camera Instance;
     public Transform[] points = new Transform[5];
     private int currentPointIndex;
     private Transform currentPoint;
+
+    public Transform targettingPoint;
+    public float targettingSmooth;
+    public float rotateSmooth;
+
     private bool cameraPosChanged;
     public GameObject objetivo;
-    public float velX,velY;
+    public float velX, velY;
     public float velOrbitX;
-    public float smoothX,smoothY;
-    
-    float x,y;
+    public float smoothX, smoothY;
+    float angleRotated = 0;
+
+    float x, y;
     Vector3 offset;
 
     public float distancia;
-    float distanciaMin,distanciaMax;
+    float distanciaMin, distanciaMax;
 
     public bool godMode;
-
-    
-    public Modos modoCamara = Modos.Follow;
+    public Skills modoCamara = Skills.Follow;
 
     void Awake()
     {
@@ -32,24 +37,26 @@ public class TP_Camera : MonoBehaviour {
     }
 
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start()
+    {
         x = transform.eulerAngles.x;
         godMode = false;
         cameraPosChanged = false;
-	}
+    }
 
     void Update()
     {
-        if (modoCamara != Modos.Dios) godMode = false;
+        if (modoCamara != Skills.Dios) godMode = false;
     }
-	
-	// Update is called once per frame
-	void LateUpdate () {
+
+    // Update is called once per frame
+    void LateUpdate()
+    {
 
         switch (modoCamara)
         {
-            case Modos.Follow:
+            case Skills.Follow:
 
                 x += Input.GetAxis("Horizontal") * velX * distancia * Time.deltaTime;
                 //y -= Input.GetAxis("Mouse Y") * ySpeed * 0.02f;
@@ -69,14 +76,24 @@ public class TP_Camera : MonoBehaviour {
                 offset = Camera.main.transform.position - objetivo.transform.position;
                 break;
 
-            case Modos.Libre:
+            case Skills.Libre:
 
-                //codigo de movimiento de cámara aqui
-                offset.z = -20f;
-                transform.position = Vector3.Slerp(transform.position, objetivo.transform.position + offset, smoothX * Time.deltaTime);
+                //y -= Input.GetAxis("Mouse Y") * ySpeed * 0.02f;
+                //y = ClampAngle(y, yMinLimit, yMaxLimit);
+                y = 30f; // cambio manual de la inclinación
+
+                rotation = Quaternion.Euler(y, x, 0);
+
+                //distancia = Mathf.Clamp(distancia - Input.GetAxis("Mouse ScrollWheel") * 5, distanceMin, distanceMax);
+
+                negDistance = new Vector3(0.0f, 0.0f, -distancia);
+                position = rotation * negDistance + objetivo.transform.position;
+                transform.rotation = Quaternion.Slerp(transform.rotation, rotation, smoothX * Time.deltaTime);
+                transform.position = Vector3.Slerp(transform.position, position, 5 * Time.deltaTime);
+
                 break;
 
-            case Modos.Orbit:
+            case Skills.Orbit:
 
                 x += Input.GetAxis("Mouse X") * velOrbitX * distancia * Time.deltaTime;
                 //y -= Input.GetAxis("Mouse Y") * ySpeed * 0.02f;
@@ -93,14 +110,29 @@ public class TP_Camera : MonoBehaviour {
                 transform.position = Vector3.Slerp(transform.position, position, 5 * Time.deltaTime);
                 break;
 
-            case Modos.Dios: //RETOCAR CON CONTROLES DE SEGUNDO JOYSTICK
+            case Skills.Dios:
 
-                if (!godMode) godMode = true;
-                transform.Translate(Input.GetAxisRaw("Horizontal") * 10f * Time.deltaTime, 0f, Input.GetAxisRaw("Vertical") * 10f * Time.deltaTime, Space.World);
-                //transform.Rotate(0f, Input.GetAxisRaw("Horizontal") * 90f * Time.deltaTime, 0f, Space.World);
+                godMode = true;
+                Vector3 angles = transform.localEulerAngles;
+                float temp = angles.x;
+                angles.x = 0f;
+                transform.rotation = Quaternion.Euler(angles);
+                transform.Translate(Input.GetAxisRaw("Horizontal") * 10f * Time.deltaTime, 0f, Input.GetAxisRaw("Vertical") * 10f * Time.deltaTime);
+                angles.x += temp;
+
+                angleRotated += Input.GetAxisRaw("Mouse Y") * 90f * Time.deltaTime;
+                angleRotated = Mathf.Clamp(angleRotated, -60, 30);
+                Debug.Log("Angle Rotated: " + angleRotated);
+
+                if (angleRotated < 30 && angleRotated > -60) angles.x += Input.GetAxisRaw("Mouse Y") * 90f * Time.deltaTime;
+                angles.y += Input.GetAxisRaw("Mouse X") * 60f * Time.deltaTime;
+                angles.z = 0f;
+
+                transform.rotation = Quaternion.Euler(angles);
+
                 break;
 
-            case Modos.Puntos:
+            case Skills.Puntos:
                 //Punto de visualización en el mapa
                 if (Input.GetKeyUp(KeyCode.KeypadPlus))
                 {
@@ -127,11 +159,17 @@ public class TP_Camera : MonoBehaviour {
                 }
                 break;
 
-            case Modos.Cinema:
+            case Skills.Cinema:
 
                 //codigo de movimiento de cámara aqui
                 break;
 
+            case Skills.Targetting:
+
+                transform.position = Vector3.Slerp(transform.position, targettingPoint.position, targettingSmooth * Time.deltaTime);
+                transform.rotation = Quaternion.Slerp(transform.rotation, targettingPoint.rotation, rotateSmooth * Time.deltaTime);
+                break;
+
         }
-	}
+    }
 }

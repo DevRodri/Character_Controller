@@ -15,11 +15,14 @@ public class TP_Controller : MonoBehaviour {
 
     public CharacterController controlador;
 
+    private Skills lastMode;
+
     void Awake()
     {
         Instance = this;
         lAnalogDirection.y = rAnalogDirection.y = 0f;
         controlador = GetComponent<CharacterController>();
+        //Application.targetFrameRate = 60;
     }
 
 	// Use this for initialization
@@ -36,7 +39,7 @@ public class TP_Controller : MonoBehaviour {
         InputCamara();
 
         //actualizamos el movimiento del player
-        TP_Motor.Instance.UpdateMovement();
+        if (!TP_Camera.Instance.godMode) TP_Motor.Instance.MovePlayer();
 	}
 
     //Get input from controller
@@ -62,15 +65,31 @@ public class TP_Controller : MonoBehaviour {
     void InputHabilidades()
     {
         //Jumping Input
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetButtonDown("Jump"))
         {
             Jump();
         }
 
+        //PROVISIONAL HASTA QUE DEFINAMOS LOS BOTONES
+        if (Input.GetKeyDown(KeyCode.F)) TP_Skills.Instance.ActivateSkill(SkillTypes.tractionBeam);
+        if (Input.GetKeyDown(KeyCode.G)) TP_Skills.Instance.ActivateSkill(SkillTypes.liftingHook);
+        if (Input.GetKeyDown(KeyCode.B)) TP_Skills.Instance.ActivateSkill(SkillTypes.blackHole);
+
         //Apuntar
         if (Input.GetKeyDown(KeyCode.Z))
         {
-            TP_Skills.Instance.isTargetting = !TP_Skills.Instance.isTargetting;
+            switch (TP_Status.Instance.IsTargetting())
+            {
+                case true:
+                    TP_Status.Instance.SetTargetting(false);
+                    TP_Camera.Instance.modoCamara = lastMode;
+                    break;
+                case false:
+                    TP_Status.Instance.SetTargetting(true);
+                    lastMode = TP_Camera.Instance.modoCamara;
+                    TP_Camera.Instance.modoCamara = Skills.Targetting;
+                    break;
+            }
         }
     }
 
@@ -80,10 +99,10 @@ public class TP_Controller : MonoBehaviour {
         rAnalogDirection = new Vector3(Input.GetAxisRaw("Mouse X"), 0f, Input.GetAxisRaw("Mouse Y"));
         Debug.DrawRay(transform.position, rAnalogDirection * 10f, Color.blue);
 
-        if (Input.GetKeyUp(KeyCode.C))
+        if (Input.GetKeyUp(KeyCode.C) && TP_Camera.Instance.modoCamara != Skills.Targetting)
         {
-            if (TP_Camera.Instance.modoCamara == Modos.Cinema)
-                TP_Camera.Instance.modoCamara = Modos.Follow;
+            if (TP_Camera.Instance.modoCamara == Skills.Cinema)
+                TP_Camera.Instance.modoCamara = Skills.Follow;
             else
                 TP_Camera.Instance.modoCamara += 1;
 

@@ -11,24 +11,25 @@ public class TP_Motor : MonoBehaviour {
     Vector3 targetDir;
     public float moveSpeed;
     public float jumpSpeed;
+    public float reJumpSpeed;
     public float dampSpeed;
     public float rotSpeed;
     public float gravity;
+    public float reJumpDelay;
 
 
 
     //PRIVATE
     private float verticalMovement;
-    private bool isGrounded;
-    private bool isJumping;
-    private bool isReJumping;
+    //private bool isJumping;
+    //private bool isReJumping;
     private float floorPos;
 
     void Awake()
     {
         Instance = this;
         moveVector = targetDir = Vector3.zero;
-        isGrounded = isJumping = isReJumping = false;
+        //isJumping = isReJumping = false;
         floorPos = 0f;
     }
 
@@ -37,8 +38,14 @@ public class TP_Motor : MonoBehaviour {
         verticalMovement = 0f;
 	}
 
-    public void UpdateMovement() //REVISAR
+    private void UpdateMovement() //REVISAR
     {
+        if (TP_Controller.Instance.controlador.isGrounded)
+        {
+            TP_Status.Instance.SetJumping(false);
+            TP_Status.Instance.SetReJumping(false);
+        }
+
         Transform camara = TP_Camera.Instance.transform;
 
         //coordenadas de cámara a wolrd space
@@ -47,26 +54,25 @@ public class TP_Motor : MonoBehaviour {
         forward = forward.normalized;
 
         //calcular forward y right en funcion de coordenadas de camara
-        Vector3 right = Vector3.zero;
-        right.x = forward.z;
-        right.z = -forward.x;
+        Vector3 right = new Vector3(forward.z, 0f, -forward.x);
 
         //obtener movimiento del joystick y calcular dirección de movimiento
         targetDir = moveVector.x * right + moveVector.z * forward;
         //targetDir = targetDir.normalized;
 
-        //aplicar velocidad
+        //aplicar velocidad de movimiento
         targetDir *= moveSpeed;
 
-        //aplicar salto y/o gravedad
-        if (Input.GetKeyUp(KeyCode.Space)) targetDir.y = jumpSpeed;
+        //aplicar gravedad si no está en el suelo
+        //if (!TP_Controller.Instance.controlador.isGrounded) verticalMovement -= gravity * Time.deltaTime;
+        ApplyGravity();
 
-        targetDir.y -= gravity * Time.deltaTime;
+        //añadir velocidad vertical
+        targetDir.y = verticalMovement;
 
         //actualizar movimiento del controlador
         TP_Controller.Instance.controlador.Move(targetDir * Time.deltaTime);
 
-        FacePlayerToMovementDir();
     }
 
     private void UpdateMovement_old()
@@ -91,35 +97,46 @@ public class TP_Motor : MonoBehaviour {
 
     void FacePlayerToMovementDir()
     {
-        if (targetDir != Vector3.zero)
+        if (moveVector != Vector3.zero)
         {
+            targetDir.y = 0f;
             Quaternion faceDir = Quaternion.LookRotation(targetDir);
-            faceDir.x = 0f;
             this.transform.rotation = Quaternion.Slerp(this.transform.rotation, faceDir, dampSpeed * Time.deltaTime);
         }
     }
 
+    public void MovePlayer()
+    {
+        UpdateMovement();
+        FacePlayerToMovementDir();
+    }
 
     public void Jump()
     {
-        if (TP_Controller.Instance.controlador.isGrounded)
+        if (TP_Controller.Instance.controlador.isGrounded && !TP_Status.Instance.IsJumping())
         {
-            Debug.Log("I'm grounded, so lets jump!!");
             verticalMovement = jumpSpeed;
+            TP_Status.Instance.SetJumping(true);
+        }
+        else if (!TP_Status.Instance.IsReJumping() && verticalMovement < reJumpDelay)
+        {
+            verticalMovement = reJumpSpeed;
+            TP_Status.Instance.SetReJumping(true);
         }
     }
 
     void ApplyGravity()
     {
-        targetDir.y -= gravity;
+        if (!TP_Controller.Instance.controlador.isGrounded)
+            verticalMovement -= gravity * Time.deltaTime;
     }
 
+    /*
     public void OnCollisionStay(Collision col)
     {
         //Debug.Log("I'm Grounded !!!");
         //Debug.Log("Floor Pos: " + floorPos);
         //Debug.Log("My Pos: " + this.transform.position.y);
-        isGrounded = true;
         isJumping = false;
         isReJumping = false;
         floorPos = this.transform.position.y;
@@ -129,5 +146,6 @@ public class TP_Motor : MonoBehaviour {
     {
         isGrounded = false;
     }
+    */
 
 }

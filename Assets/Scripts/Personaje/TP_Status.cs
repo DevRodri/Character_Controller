@@ -9,13 +9,18 @@ public class TP_Status : MonoBehaviour {
     public static TP_Status Instance;
 
 
+
     //PRIVATE
     private int vida;
     private bool isDead;
+    private bool isJumping;
+    private bool isRejumping;
+    private bool isTargetting;
 
     void Awake()
     {
         Instance = this;
+        isJumping = isRejumping = false;
     }
 
 	// Use this for initialization
@@ -47,6 +52,26 @@ public class TP_Status : MonoBehaviour {
         }
         else vida += num;
     }
+
+    public bool IsJumping() { return isJumping; }
+    public bool IsReJumping() { return isRejumping; }
+    public bool IsTargetting() { return isTargetting; }
+
+    public void SetJumping(bool value)
+    {
+        isJumping = value;
+    }
+
+    public void SetReJumping(bool value)
+    {
+        isRejumping = value;
+    }
+
+    public void SetTargetting(bool value)
+    {
+        isTargetting = value;
+    }
+
 	// Update is called once per frame
 	void Update () {
 	

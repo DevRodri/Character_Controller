@@ -36,7 +36,7 @@ public class MouseOrbitImproved : MonoBehaviour
 
     void LateUpdate()
     {
-        if (!TP_Skills.Instance.isTargetting)
+        if (!TP_Status.Instance.IsTargetting())
         {
             x += Input.GetAxis("Horizontal") * xSpeed * distance * Time.deltaTime;
             //y -= Input.GetAxis("Mouse Y") * ySpeed * 0.02f;
