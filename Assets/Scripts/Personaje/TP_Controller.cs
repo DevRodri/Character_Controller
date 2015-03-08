@@ -20,15 +20,14 @@ public class TP_Controller : MonoBehaviour {
     void Awake()
     {
         Instance = this;
-        lAnalogDirection.y = rAnalogDirection.y = 0f;
-        controlador = GetComponent<CharacterController>();
         //Application.targetFrameRate = 60;
     }
 
 	// Use this for initialization
 	void Start()
     {
-	
+	    lAnalogDirection.y = rAnalogDirection.y = 0f;
+        controlador = GetComponent<CharacterController>();
 	}
 	
 	// Update is called once per frame
@@ -37,6 +36,7 @@ public class TP_Controller : MonoBehaviour {
         InputMovimiento(); //input y actualización del movimiento
         InputHabilidades();
         InputCamara();
+        //Debug.Log("Saltando: " + TP_Status.Instance.IsJumping());
 
         //actualizamos el movimiento del player
         if (!TP_Camera.Instance.godMode) TP_Motor.Instance.MovePlayer();
@@ -65,10 +65,7 @@ public class TP_Controller : MonoBehaviour {
     void InputHabilidades()
     {
         //Jumping Input
-        if (Input.GetButtonDown("Jump"))
-        {
-            Jump();
-        }
+        if (Input.GetButtonDown("Jump")) Jump();
 
         //PROVISIONAL HASTA QUE DEFINAMOS LOS BOTONES
         if (Input.GetKeyDown(KeyCode.F)) TP_Skills.Instance.ActivateSkill(SkillTypes.tractionBeam);
@@ -107,6 +104,11 @@ public class TP_Controller : MonoBehaviour {
                 TP_Camera.Instance.modoCamara += 1;
 
             Debug.Log("El modo de Camara es: " + TP_Camera.Instance.modoCamara);
+        }
+
+        if (Input.GetKeyUp(KeyCode.X))
+        {
+            TP_Camera.Instance.ResetCameraPosition();
         }
         
     }

@@ -13,28 +13,30 @@ public class TP_Status : MonoBehaviour {
     //PRIVATE
     private int vida;
     private bool isDead;
-    private bool isJumping;
-    private bool isRejumping;
+    public bool isJumping;
+    public bool isRejumping;
     private bool isTargetting;
 
     void Awake()
     {
         Instance = this;
-        isJumping = isRejumping = false;
     }
 
 	// Use this for initialization
 	void Start () {
         vida = 100;
-        isDead = false;
+        isDead = isJumping = isRejumping = false;
 	}
 
     public int GetVida(){ return vida; }
 
     public void SetVida(int num)
     {
-        if (num == 0) isDead = true;
-        else if (num <= 100) vida = num;
+        if (num == 0)
+        {
+            Debug.LogError("No se puede asignar vida 0");
+            return;
+        } else if (num <= 100) vida = num;
     }
 
     public void AddVida(int num)
@@ -47,15 +49,25 @@ public class TP_Status : MonoBehaviour {
     {
         if (vida - num > 0)
         {
-            vida = 0;
-            isDead = false;
+            vida -= num;
         }
-        else vida += num;
+        else
+        {
+            vida = 0;
+            isDead = true;
+            SendMessage("OnDeath");
+        }
+    }
+
+    public void OnDeath()
+    {
+        //do something on Death
     }
 
     public bool IsJumping() { return isJumping; }
     public bool IsReJumping() { return isRejumping; }
     public bool IsTargetting() { return isTargetting; }
+    public bool IsDead() { return isDead; }
 
     public void SetJumping(bool value)
     {
@@ -71,9 +83,4 @@ public class TP_Status : MonoBehaviour {
     {
         isTargetting = value;
     }
-
-	// Update is called once per frame
-	void Update () {
-	
-	}
 }
