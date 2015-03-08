@@ -55,7 +55,7 @@ public class TP_Status : MonoBehaviour {
         {
             vida = 0;
             isDead = true;
-            SendMessage("OnDeath");
+            OnDeath();
         }
     }
 

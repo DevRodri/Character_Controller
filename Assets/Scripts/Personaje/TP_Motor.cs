@@ -35,13 +35,6 @@ public class TP_Motor : MonoBehaviour {
 
     private void UpdateMovement() //REVISAR
     {
-        if (TP_Controller.Instance.controlador.isGrounded)
-        {
-            TP_Status.Instance.SetJumping(false);
-            TP_Status.Instance.SetReJumping(false);
-            targetDir.y = 0;
-        }
-
         Transform camara = TP_Camera.Instance.transform;
 
         //coordenadas de cámara a wolrd space
@@ -69,6 +62,14 @@ public class TP_Motor : MonoBehaviour {
         //actualizar movimiento del controlador
         TP_Controller.Instance.controlador.Move(targetDir * Time.deltaTime);
 
+        if (TP_Controller.Instance.controlador.isGrounded)
+        {
+            TP_Status.Instance.SetJumping(false);
+            Debug.Log("Salto en UpdateMovement(): " + TP_Status.Instance.IsJumping());
+            TP_Status.Instance.SetReJumping(false);
+            targetDir.y = 0;
+        }
+
     }
 
     void FacePlayerToMovementDir()
@@ -93,6 +94,7 @@ public class TP_Motor : MonoBehaviour {
         {
             verticalMovement = jumpSpeed;
             TP_Status.Instance.SetJumping(true);
+            Debug.Log("Salto en Jump(): " + TP_Status.Instance.IsJumping());
         }
         else if (!TP_Status.Instance.IsReJumping() && verticalMovement < reJumpDelay)
         {
@@ -106,5 +108,6 @@ public class TP_Motor : MonoBehaviour {
         if (!TP_Controller.Instance.controlador.isGrounded)
             verticalMovement -= gravity * Time.deltaTime;
     }
+
 
 }
